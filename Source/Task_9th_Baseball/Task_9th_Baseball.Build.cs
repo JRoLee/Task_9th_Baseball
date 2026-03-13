@@ -8,7 +8,18 @@ public class Task_9th_Baseball : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
+		PublicDependencyModuleNames.AddRange(new string[]
+		{
+			"Core",
+			"CoreUObject",
+			"Engine",
+			"InputCore",
+			"EnhancedInput",
+			//UI
+			"UMG",
+			"Slate",
+			"SlateCore",
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
