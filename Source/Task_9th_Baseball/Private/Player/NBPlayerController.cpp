@@ -4,6 +4,8 @@
 #include "Player/NBPlayerController.h"
 
 #include "EngineUtils.h"
+#include "Game/NBGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/NBMainUI.h"
 
 void ANBPlayerController::BeginPlay()
@@ -50,12 +52,13 @@ void ANBPlayerController::ClientRPCPrintChatMessageString_Implementation(const F
 
 void ANBPlayerController::ServerRPCPrintChatMessageString_Implementation(const FString& InChatMessageString)
 {
-	for (TActorIterator<ANBPlayerController> It(GetWorld()); It; ++It)
+	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(this);
+	if (IsValid(GameMode) == true)
 	{
-		TObjectPtr<ANBPlayerController> NBPlayerController = *It;
-		if (IsValid(NBPlayerController) == true)
+		ANBGameModeBase* NBGameModeBase = Cast<ANBGameModeBase>(GameMode);
+		if (IsValid(NBGameModeBase) == true)
 		{
-			NBPlayerController->ClientRPCPrintChatMessageString(InChatMessageString);
+			NBGameModeBase->PrintChatMessageString(this, InChatMessageString);
 		}
 	}
 }

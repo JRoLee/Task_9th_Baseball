@@ -23,7 +23,7 @@ public:
 	virtual void NativeDestruct() override;
 	
 	UFUNCTION()
-	void ShowChatLog(const FString& InChatMessageString);
+	void ShowChatLog(const FString& InChatMessageString);	
 	
 protected:
 	
