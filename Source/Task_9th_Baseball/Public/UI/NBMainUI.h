@@ -20,7 +20,15 @@ class TASK_9TH_BASEBALL_API UNBMainUI : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 	
+	virtual void NativeDestruct() override;
+	
+	UFUNCTION()
+	void ShowChatLog(const FString& InChatMessageString);
+	
 protected:
+	
+	UFUNCTION()
+	void OnChatInputTextCommitted(const FText& Text, ETextCommit::Type CommitMethod);
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UEditableTextBox> EditableText_ChatInput;
@@ -30,4 +38,7 @@ protected:
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UScrollBox> ScrollBox_ChatLog;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Chat | Font")
+	FSlateFontInfo ChatFontInfo;
 };

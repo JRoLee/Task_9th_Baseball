@@ -12,6 +12,5 @@
 UCLASS()
 class TASK_9TH_BASEBALL_API ANBGameModeBase : public AGameModeBase
 {
-	GENERATED_BODY()
-	
+	GENERATED_BODY()	
 };

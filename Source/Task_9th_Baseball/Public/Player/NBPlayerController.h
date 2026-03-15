@@ -18,10 +18,20 @@ class TASK_9TH_BASEBALL_API ANBPlayerController : public APlayerController
 public:
 	virtual void BeginPlay() override;
 	
+	void SetChatMassageString(const FString& InChatMassageString);
+	
+	UFUNCTION(Client, Reliable)
+	void ClientRPCPrintChatMessageString(const FString& InChatMessageString);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPCPrintChatMessageString(const FString& InChatMessageString);
+	
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UNBMainUI> MainUIWidgetClass;
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UNBMainUI> MainUIWidgetInstance;
+	
+	FString ChatMassageString;
 };

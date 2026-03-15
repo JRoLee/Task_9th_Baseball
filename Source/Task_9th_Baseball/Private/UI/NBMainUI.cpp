@@ -3,7 +3,61 @@
 
 #include "UI/NBMainUI.h"
 
+#include "Components/EditableTextBox.h"
+#include "Components/ScrollBox.h"
+#include "Components/TextBlock.h"
+#include "Player/NBPlayerController.h"
+
 void UNBMainUI::NativeConstruct()
 {
 	Super::NativeConstruct();
+	
+	if (EditableText_ChatInput->OnTextCommitted.IsAlreadyBound(this, &UNBMainUI::OnChatInputTextCommitted) == false)
+	{
+		EditableText_ChatInput->OnTextCommitted.AddDynamic(this, &UNBMainUI::OnChatInputTextCommitted);
+	}
+	
 }
+
+void UNBMainUI::NativeDestruct()
+{
+	Super::NativeDestruct();
+	
+	if (EditableText_ChatInput->OnTextCommitted.IsAlreadyBound(this, &UNBMainUI::OnChatInputTextCommitted) == true)
+	{
+		EditableText_ChatInput->OnTextCommitted.RemoveDynamic(this, &UNBMainUI::OnChatInputTextCommitted);
+	}
+}
+
+void UNBMainUI::OnChatInputTextCommitted(const FText& Text, ETextCommit::Type CommitMethod)
+{
+	if (CommitMethod == ETextCommit::OnEnter)
+	{
+		TObjectPtr<APlayerController> OwningPlayerController = GetOwningPlayer();
+		if (IsValid(OwningPlayerController) == true)
+		{
+			TObjectPtr<ANBPlayerController> OwningNBPlayerController = Cast<ANBPlayerController>(OwningPlayerController);
+			{
+				OwningNBPlayerController->SetChatMassageString(Text.ToString());
+								
+				EditableText_ChatInput->SetText(FText());
+			}
+		}
+	}
+}
+
+void UNBMainUI::ShowChatLog(const FString& InChatMessageString)
+{
+	if (IsValid(ScrollBox_ChatLog) == true)
+	{
+		TObjectPtr<UTextBlock> NewTextBlock = NewObject<UTextBlock>(this);
+		
+		NewTextBlock->SetFont(ChatFontInfo);
+		NewTextBlock->SetAutoWrapText(true);
+		NewTextBlock->SetText(FText::FromString(InChatMessageString));
+		
+		ScrollBox_ChatLog->AddChild(NewTextBlock);
+		ScrollBox_ChatLog->ScrollToEnd();
+	}
+}
+
