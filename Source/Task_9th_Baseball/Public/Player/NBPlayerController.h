@@ -21,6 +21,9 @@ public:
 	void SetChatMassageString(const FString& InChatMassageString);
 	
 	UFUNCTION(Client, Reliable)
+	void ClientRPCPrintResultString(const FString& InResultString);
+	
+	UFUNCTION(Client, Reliable)
 	void ClientRPCPrintChatMessageString(const FString& InChatMessageString);
 
 	UFUNCTION(Server, Reliable)

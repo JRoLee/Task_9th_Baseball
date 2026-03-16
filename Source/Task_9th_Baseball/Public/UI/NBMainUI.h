@@ -25,6 +25,9 @@ public:
 	UFUNCTION()
 	void ShowChatLog(const FString& InChatMessageString);	
 	
+	UFUNCTION()
+	void SetResultText(const FString& ResultString);
+	
 protected:
 	
 	UFUNCTION()

@@ -61,3 +61,11 @@ void UNBMainUI::ShowChatLog(const FString& InChatMessageString)
 	}
 }
 
+void UNBMainUI::SetResultText(const FString& ResultString)
+{
+	if (IsValid(TextBlock_Result) == true)
+	{
+		TextBlock_Result->SetText(FText::FromString(ResultString));
+	}
+}
+

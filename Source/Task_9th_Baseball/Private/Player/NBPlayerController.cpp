@@ -2,8 +2,6 @@
 
 
 #include "Player/NBPlayerController.h"
-
-#include "EngineUtils.h"
 #include "Game/NBGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/NBMainUI.h"
@@ -37,9 +35,16 @@ void ANBPlayerController::SetChatMassageString(const FString& InChatMassageStrin
 	
 	if (IsLocalController() == true)
 	{
-		ServerRPCPrintChatMessageString((InChatMassageString));
+		ServerRPCPrintChatMessageString(InChatMassageString);
 	}
-	
+}
+
+void ANBPlayerController::ClientRPCPrintResultString_Implementation(const FString& InResultString)
+{
+	if (IsValid(MainUIWidgetInstance) == true)
+	{
+		MainUIWidgetInstance->SetResultText(InResultString);
+	}
 }
 
 void ANBPlayerController::ClientRPCPrintChatMessageString_Implementation(const FString& InChatMessageString)

@@ -32,6 +32,14 @@ public:
 	
 	FString JudgeResult(const FString& InAnswerNumberString, const FString& InGuessNumberString);
 	
+	void IncreaseGuessCount(ANBPlayerController* InChattingPlayerController);
+	
+	FString SetPlayerInfoString(ANBPlayerController* InChattingPlayerController);
+	
+	void ResetGame();
+
+	void JudgeGame(ANBPlayerController* InChattingPlayerController, int32 InStrikeCount);
+	
 protected:
 	FString AnswerNumberString;
 	
