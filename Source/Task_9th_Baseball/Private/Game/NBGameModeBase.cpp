@@ -71,20 +71,18 @@ bool ANBGameModeBase::IsGuessNumberString(const FString& InNumberString)
 			break;
 		}
 		
-		bool bIsUnique = true;
 		TSet<TCHAR> UniqueDigits;
 		for (TCHAR C : InNumberString)
 		{
 			if (FChar::IsDigit(C) == false || C == '0')
 			{
-				bIsUnique = false;
 				break;
 			}
 			
 			UniqueDigits.Add(C);
 		}
 		
-		if (bIsUnique == false)
+		if (UniqueDigits.Num() != 3)
 		{
 			break;
 		}
@@ -147,16 +145,16 @@ FString ANBGameModeBase::SetPlayerInfoString(ANBPlayerController* InChattingPlay
 
 void ANBGameModeBase::PrintChatMessageString(ANBPlayerController* InChattingPlayerController, const FString& InChatMessageString)
 {
-	int Index = InChatMessageString.Len() - 3;
-	FString GuessNumberString = InChatMessageString.RightChop(Index);
-	FString PlayerInfoString = SetPlayerInfoString(InChattingPlayerController);
 	
-	if (IsGuessNumberString(GuessNumberString) == true)
+	FString PlayerInfoString = SetPlayerInfoString(InChattingPlayerController);
+	bool bIsHaveChance = IsHaveChance(InChattingPlayerController);
+	
+	if (IsGuessNumberString(InChatMessageString) == true && bIsHaveChance == true)
 	{
 		IncreaseGuessCount(InChattingPlayerController);
 		PlayerInfoString = SetPlayerInfoString(InChattingPlayerController);
 		
-		FString JudgeString = JudgeResult(AnswerNumberString, GuessNumberString);
+		FString JudgeString = JudgeResult(AnswerNumberString, InChatMessageString);
 		
 		int32 StrikeCount = FCString::Atoi(*JudgeString.Left(1));
 		JudgeGame(InChattingPlayerController, StrikeCount);
@@ -178,8 +176,10 @@ void ANBGameModeBase::PrintChatMessageString(ANBPlayerController* InChattingPlay
 			ANBPlayerController* NBPlayerController = *It;
 			if (IsValid(NBPlayerController) == true)
 			{
-				FString CombineMessageString = PlayerInfoString + TEXT(": ") + InChatMessageString;
+				NotifyString = SetNotifyString(InChatMessageString, bIsHaveChance);
+				FString CombineMessageString = PlayerInfoString + TEXT(": ") + InChatMessageString + NotifyString;
 				NBPlayerController->ClientRPCPrintChatMessageString(CombineMessageString);
+				NotifyString = TEXT("");
 			}
 		}
 	}
@@ -241,4 +241,80 @@ void ANBGameModeBase::JudgeGame(ANBPlayerController* InChattingPlayerController,
 			}
 		}
 	}
+}
+
+FString ANBGameModeBase::SetNotifyString(const FString& InChatMessageString, bool bIsHaveChance)
+{
+	FString NewNotifyString = TEXT("");
+	TSet<TCHAR> UniqueDigits;
+	bool bIsLatter = false;
+	
+	//정답 시도 아닌것 거르기
+	if (InChatMessageString.Len() > 3)
+	{
+		return NewNotifyString;
+	}
+	
+	//문자 포함 채팅 거르기
+	for (TCHAR C : InChatMessageString)
+	{
+		if (FChar::IsDigit(C) == false)
+		{
+			bIsLatter = true;
+			break;
+		}
+		
+		UniqueDigits.Add(C);
+	}
+	
+	if (bIsLatter == true)
+	{
+		return NewNotifyString;
+	}
+	
+	if (bIsHaveChance == true)
+	{
+		//0 포함 거르기
+		if (UniqueDigits.Contains('0'))
+		{
+			NewNotifyString = TEXT(" (Please enter a number 1 ~ 9.)");
+			return NewNotifyString;
+		}
+	
+		//숫자 1~2개 입력 거르기
+		if (InChatMessageString.Len() < 3 )
+		{
+			NewNotifyString = TEXT(" (Please enter a 3-digit number.)");
+			return NewNotifyString;
+		}
+	
+		//중복 숫자 입력 거르기
+		if (UniqueDigits.Num() < 3)
+		{
+			NewNotifyString = TEXT(" (Please enter a unique number.)");
+			return NewNotifyString;
+		}
+	}
+	else
+	{
+		NewNotifyString = TEXT(" (No opportunity to try.)");
+		return NewNotifyString;
+	}
+	
+	return NewNotifyString;
+}
+
+bool ANBGameModeBase::IsHaveChance(ANBPlayerController* InChattingPlayerController)
+{
+	bool bIsHaveChance = true;
+	ANBPlayerState* NBPlayerState = InChattingPlayerController->GetPlayerState<ANBPlayerState>();
+	if (IsValid(NBPlayerState) == true)
+	{
+		if (NBPlayerState->CurrentGuessCount >= NBPlayerState->MaxGuessCount)
+		{
+			bIsHaveChance = false;
+		}
+	}
+	
+	return bIsHaveChance;
 }

@@ -40,8 +40,14 @@ public:
 
 	void JudgeGame(ANBPlayerController* InChattingPlayerController, int32 InStrikeCount);
 	
+	FString SetNotifyString(const FString& InChatMessageString, bool bIsHaveChance);
+	
+	bool IsHaveChance(ANBPlayerController* InChattingPlayerController);
+	
 protected:
 	FString AnswerNumberString;
+	
+	FString NotifyString = TEXT("");
 	
 	TArray<TObjectPtr<ANBPlayerController>> AllPlayerControllers;
 #pragma endregion
