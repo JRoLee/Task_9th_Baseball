@@ -69,6 +69,14 @@ void ANBPlayerController::ServerRPCPrintChatMessageString_Implementation(const F
 	}
 }
 
+void ANBPlayerController::ClientRPCShowResult_Implementation(const FResult& InResult)
+{
+	if (IsValid(MainUIWidgetInstance) == true)
+	{
+		MainUIWidgetInstance->SetResultUI(InResult);
+	}
+}
+
 void ANBPlayerController::UpdateUITimer(float RemainingTime)
 {
 	if (IsValid(MainUIWidgetInstance) == true)

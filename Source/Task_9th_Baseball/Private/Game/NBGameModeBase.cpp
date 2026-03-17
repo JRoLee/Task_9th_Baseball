@@ -30,7 +30,7 @@ void ANBGameModeBase::OnPostLogin(AController* NewPlayer)
 		}
 	}
 	
-	if (AllPlayerControllers.Num() >= 3)
+	if (AllPlayerControllers.Num() >= 1)
 	{
 		if (bIsPlaying == false)
 		{
@@ -48,6 +48,8 @@ void ANBGameModeBase::BeginPlay()
 	AnswerNumberString = GenerateAnswerNumber();
 	
 }
+
+#pragma region GamePlayLogic
 
 FString ANBGameModeBase::GenerateAnswerNumber()
 {
@@ -79,20 +81,17 @@ bool ANBGameModeBase::IsGuessNumberString(const FString& InNumberString)
 			break;
 		}
 		
-		bool bIsUnique = true;
 		TSet<TCHAR> UniqueDigits;
 		for (TCHAR C : InNumberString)
 		{
 			if (FChar::IsDigit(C) == false || C == '0')
 			{
-				bIsUnique = false;
 				break;
 			}
 			
 			UniqueDigits.Add(C);
 		}
-		
-		if (bIsUnique == false)
+		if (UniqueDigits.Num() < 3)
 		{
 			break;
 		}
@@ -131,6 +130,38 @@ FString ANBGameModeBase::JudgeResult(const FString& InAnswerNumberString, const 
 	return FString::Printf(TEXT("%dS %dB"),StrikeCount,BallCount);
 }
 
+FResult ANBGameModeBase::MakeJudgeResult(const FString& InAnswerNumberString, const FString& InGuessNumberString)
+{
+	FResult NewResult;
+	int32 StrikeCount = 0, BallCount = 0;
+	bool bIsOut = false;
+	for (int32 i = 0; i < 3; i++)
+	{
+		if (InAnswerNumberString[i] == InGuessNumberString[i])
+		{
+			StrikeCount++;
+		}
+		else
+		{
+			FString PlayerGuessChar = FString::Printf(TEXT("%c"), InGuessNumberString[i]);
+			if (InAnswerNumberString.Contains(PlayerGuessChar) == true)
+			{
+				BallCount++;
+			}
+		}
+	}
+	if (StrikeCount == 0 && BallCount == 0)
+	{
+		bIsOut = true;
+	}
+	NewResult.BallCount = BallCount;
+	NewResult.StrikeCount = StrikeCount;
+	NewResult.bIsOut = bIsOut;
+	NewResult.InputAnswerString = InGuessNumberString;
+	
+	return NewResult;
+}
+
 void ANBGameModeBase::IncreaseGuessCount(ANBPlayerController* InChattingPlayerController)
 {
 	ANBPlayerState* NBPlayerState = InChattingPlayerController->GetPlayerState<ANBPlayerState>();
@@ -155,32 +186,26 @@ FString ANBGameModeBase::SetPlayerInfoString(ANBPlayerController* InChattingPlay
 
 void ANBGameModeBase::PrintChatMessageString(ANBPlayerController* InChattingPlayerController, const FString& InChatMessageString)
 {
-	int Index = InChatMessageString.Len() - 3;
-	FString GuessNumberString = InChatMessageString.RightChop(Index);
 	FString PlayerInfoString = SetPlayerInfoString(InChattingPlayerController);
 	
 	bool bIsMyTurn = InChattingPlayerController->CurrentPlayerState == FGameplayTag::RequestGameplayTag(FName("Player.State.MyTurn"));
-	bool bIsValidNumber = IsGuessNumberString(GuessNumberString);
+	bool bIsValidNumber = IsGuessNumberString(InChatMessageString);
 	
 	if (bIsMyTurn == true && bIsValidNumber == true)
 	{
 		IncreaseGuessCount(InChattingPlayerController);
-		PlayerInfoString = SetPlayerInfoString(InChattingPlayerController);
-		
-		FString JudgeString = JudgeResult(AnswerNumberString, GuessNumberString);
-		
-		int32 StrikeCount = FCString::Atoi(*JudgeString.Left(1));
-		JudgeGame(InChattingPlayerController, StrikeCount);
+		FResult JudgeResult = MakeJudgeResult(AnswerNumberString, InChatMessageString);
+		int32 StrikeCount = JudgeResult.StrikeCount;
 		
 		for (TActorIterator<ANBPlayerController> It(GetWorld()); It; ++It)
 		{
 			ANBPlayerController* NBPlayerController = *It;
 			if (IsValid(NBPlayerController) == true)
 			{
-				FString CombineMessageString = PlayerInfoString + TEXT(": ") + InChatMessageString + TEXT("->") + JudgeString;
-				NBPlayerController->ClientRPCPrintChatMessageString(CombineMessageString);
+				NBPlayerController->ClientRPCShowResult(JudgeResult);
 			}
 		}
+		JudgeGame(InChattingPlayerController, StrikeCount);
 		ChangePlayerTurn();
 	}
 	else
@@ -254,6 +279,9 @@ void ANBGameModeBase::JudgeGame(ANBPlayerController* InChattingPlayerController,
 		}
 	}
 }
+#pragma endregion 
+
+#pragma region TurnPlayLogic
 
 void ANBGameModeBase::StartPlayerTurnTimer()
 {
@@ -322,4 +350,4 @@ void ANBGameModeBase::SetPlayerToPlay(int32 InPlayerIndex)
 	}
 	StartPlayerTurnTimer();
 }
-
+#pragma endregion

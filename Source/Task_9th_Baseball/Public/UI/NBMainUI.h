@@ -30,6 +30,9 @@ public:
 	
 	UFUNCTION()
 	void SetTimerText(float RemainingTime);
+	
+	UFUNCTION()
+	void SetResultUI(const FResult& InResult);
 
 protected:
 	
@@ -47,6 +50,18 @@ protected:
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> TextBlock_Timer;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> TextBlock_InputResult;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> TextBlock_Strike;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> TextBlock_Ball;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> TextBlock_Out;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Chat | Font")
 	FSlateFontInfo ChatFontInfo;

@@ -76,3 +76,30 @@ void UNBMainUI::SetTimerText(float RemainingTime)
 		TextBlock_Timer->SetText(FText::FromString(FString::FromInt(RemainingTime)));
 	}
 }
+
+void UNBMainUI::SetResultUI(const FResult& InResult)
+{
+	if (IsValid(TextBlock_InputResult) == true)
+	{
+		TextBlock_InputResult->SetText(FText::FromString(InResult.InputAnswerString));
+	}
+	if (IsValid(TextBlock_Strike) == true)
+	{
+		TextBlock_Strike->SetText(FText::FromString(FString::FromInt(InResult.StrikeCount)+TEXT(" S")));
+	}
+	if (IsValid(TextBlock_Ball) == true)
+	{
+		TextBlock_Ball->SetText(FText::FromString(FString::FromInt(InResult.BallCount)+TEXT(" B")));
+	}
+	if (IsValid(TextBlock_Out) == true)
+	{
+		if (InResult.bIsOut == true)
+		{
+			TextBlock_Out ->SetText(FText::FromString(TEXT("OUT")));
+		}
+		else
+		{
+			TextBlock_Out ->SetText(FText::FromString(TEXT("")));
+		}
+	}
+}

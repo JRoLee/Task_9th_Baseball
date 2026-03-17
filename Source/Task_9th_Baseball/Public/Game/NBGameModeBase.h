@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "NBGameModeBase.generated.h"
 
+struct FResult;
 class ANBPlayerController;
 /**
  * 
@@ -32,6 +33,8 @@ public:
 	
 	FString JudgeResult(const FString& InAnswerNumberString, const FString& InGuessNumberString);
 	
+	FResult MakeJudgeResult(const FString& InAnswerNumberString, const FString& InGuessNumberString);
+	
 	void IncreaseGuessCount(ANBPlayerController* InChattingPlayerController);
 	
 	FString SetPlayerInfoString(ANBPlayerController* InChattingPlayerController);
@@ -41,6 +44,8 @@ public:
 	void JudgeGame(ANBPlayerController* InChattingPlayerController, int32 InStrikeCount);
 	
 protected:
+	
+	
 	FString AnswerNumberString;
 	
 	TArray<TObjectPtr<ANBPlayerController>> AllPlayerControllers;

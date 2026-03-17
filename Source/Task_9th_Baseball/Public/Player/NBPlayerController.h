@@ -7,6 +7,23 @@
 #include "GameFramework/PlayerController.h"
 #include "NBPlayerController.generated.h"
 
+USTRUCT(BlueprintType)
+struct FResult
+{
+	GENERATED_BODY()
+	
+	UPROPERTY()
+	FString InputAnswerString;
+	UPROPERTY()
+	int32 StrikeCount;
+	UPROPERTY()
+	int32 BallCount;
+	UPROPERTY()
+	bool bIsOut;	
+	
+	FResult() : InputAnswerString(""), StrikeCount(0), BallCount(0), bIsOut(false) {};
+};
+
 class UNBMainUI;
 /**
  * 
@@ -26,6 +43,9 @@ public:
 	
 	UFUNCTION(Client, Reliable)
 	void ClientRPCPrintChatMessageString(const FString& InChatMessageString);
+	
+	UFUNCTION(Client, Reliable)
+	void ClientRPCShowResult(const FResult& InResult);
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPCPrintChatMessageString(const FString& InChatMessageString);
