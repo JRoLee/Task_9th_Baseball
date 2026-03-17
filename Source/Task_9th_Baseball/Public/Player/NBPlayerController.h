@@ -29,6 +29,10 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPCPrintChatMessageString(const FString& InChatMessageString);
 	
+	//UI Timer 표시
+	UFUNCTION()
+	void UpdateUITimer(float RemainingTime);
+	
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UNBMainUI> MainUIWidgetClass;

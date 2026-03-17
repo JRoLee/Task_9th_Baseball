@@ -28,6 +28,9 @@ public:
 	UFUNCTION()
 	void SetResultText(const FString& ResultString);
 	
+	UFUNCTION()
+	void SetTimerText(float RemainingTime);
+	
 protected:
 	
 	UFUNCTION()
@@ -41,6 +44,9 @@ protected:
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UScrollBox> ScrollBox_ChatLog;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> TextBlock_Timer;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Chat | Font")
 	FSlateFontInfo ChatFontInfo;

@@ -69,3 +69,11 @@ void UNBMainUI::SetResultText(const FString& ResultString)
 	}
 }
 
+void UNBMainUI::SetTimerText(float RemainingTime)
+{
+	if (IsValid(TextBlock_Timer) == true)
+	{
+		TextBlock_Timer->SetText(FText::FromString(FString::FromInt(RemainingTime)));
+	}
+}
+

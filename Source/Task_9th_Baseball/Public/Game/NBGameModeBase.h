@@ -46,5 +46,24 @@ protected:
 	TArray<TObjectPtr<ANBPlayerController>> AllPlayerControllers;
 #pragma endregion
 	
+#pragma region TurnPlayLogic
+public:
+	
+	void StartPlayerTurnTimer();
+	
+	void ChangePlayerTurn();
+	
+	
+protected:
+	
+	FTimerHandle PlayerTurnTimerHandle;
+	
+	UPROPERTY(EditAnywhere)
+	float PlayerTurnTime = 10;
+	
+	int32 PlayerTurnIndex = 0;
+
+#pragma endregion
+	
 };
 

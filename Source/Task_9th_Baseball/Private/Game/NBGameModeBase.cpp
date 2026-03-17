@@ -2,7 +2,6 @@
 
 
 #include "Game/NBGameModeBase.h"
-
 #include "EngineUtils.h"
 #include "Algo/RandomShuffle.h"
 #include "Game/NBGameStateBase.h"
@@ -29,8 +28,6 @@ void ANBGameModeBase::OnPostLogin(AController* NewPlayer)
 		{
 			NBGameStateBase->MulticastRPCBroadcastLoginMessage(NBPlayerState->PlayerNameString);
 		}
-		
-		
 	}
 }
 
@@ -39,6 +36,7 @@ void ANBGameModeBase::BeginPlay()
 	Super::BeginPlay();
 	
 	AnswerNumberString = GenerateAnswerNumber();
+	StartPlayerTurnTimer();	
 }
 
 FString ANBGameModeBase::GenerateAnswerNumber()
@@ -241,4 +239,26 @@ void ANBGameModeBase::JudgeGame(ANBPlayerController* InChattingPlayerController,
 			}
 		}
 	}
+}
+
+void ANBGameModeBase::StartPlayerTurnTimer()
+{
+	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
+	if (IsValid(NBGameStateBase) == true)
+	{
+		NBGameStateBase->RemainingTurnTime = PlayerTurnTime;
+		NBGameStateBase->StartUITimer();
+	}
+	
+	GetWorldTimerManager().SetTimer(
+		PlayerTurnTimerHandle,
+		this,
+		&ANBGameModeBase::ChangePlayerTurn,
+		PlayerTurnTime,
+		false
+	);
+}
+
+void ANBGameModeBase::ChangePlayerTurn()
+{
 }
