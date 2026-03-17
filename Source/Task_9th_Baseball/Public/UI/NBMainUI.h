@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "NBMainUI.generated.h"
 
+class UNBPlayLogCard;
 class UScrollBox;
 class UTextBlock;
 class UEditableTextBox;
@@ -65,4 +66,10 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Chat | Font")
 	FSlateFontInfo ChatFontInfo;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UScrollBox> ScrollBox_PlayLog;
+	
+	UPROPERTY(EditAnywhere, Category="PlayLog | Widget")
+	TSubclassOf<UNBPlayLogCard> PlayLogCardClass;
 };

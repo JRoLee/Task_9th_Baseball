@@ -7,6 +7,7 @@
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
 #include "Player/NBPlayerController.h"
+#include "UI/NBPlayLogCard.h"
 
 void UNBMainUI::NativeConstruct()
 {
@@ -100,6 +101,20 @@ void UNBMainUI::SetResultUI(const FResult& InResult)
 		else
 		{
 			TextBlock_Out ->SetText(FText::FromString(TEXT("")));
+		}
+	}
+	
+	if (IsValid(ScrollBox_PlayLog) == true)
+	{
+		if (IsValid(PlayLogCardClass) == true)
+		{
+			UNBPlayLogCard* PlayLogCard = CreateWidget<UNBPlayLogCard>(this, PlayLogCardClass);
+			if (IsValid(PlayLogCard) == true)
+			{
+				PlayLogCard->SetPlayLogCard(InResult);
+				
+				ScrollBox_PlayLog->InsertChildAt(0, PlayLogCard);
+			}
 		}
 	}
 }
