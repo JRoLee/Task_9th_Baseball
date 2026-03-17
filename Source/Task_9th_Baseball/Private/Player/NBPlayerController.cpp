@@ -4,6 +4,7 @@
 #include "Player/NBPlayerController.h"
 #include "Game/NBGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "UI/NBMainUI.h"
 
 void ANBPlayerController::BeginPlay()
@@ -74,4 +75,16 @@ void ANBPlayerController::UpdateUITimer(float RemainingTime)
 	{
 		MainUIWidgetInstance->SetTimerText(RemainingTime);
 	}
+}
+
+void ANBPlayerController::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(ANBPlayerController, CurrentPlayerState);
+}
+
+void ANBPlayerController::OnRep_CurrentPlayerState()
+{
+
 }

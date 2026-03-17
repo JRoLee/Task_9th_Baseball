@@ -76,4 +76,3 @@ void UNBMainUI::SetTimerText(float RemainingTime)
 		TextBlock_Timer->SetText(FText::FromString(FString::FromInt(RemainingTime)));
 	}
 }
-

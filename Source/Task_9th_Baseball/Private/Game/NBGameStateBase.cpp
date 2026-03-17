@@ -49,6 +49,11 @@ void ANBGameStateBase::StartUITimer()
 	);
 }
 
+void ANBGameStateBase::ResetUITimer()
+{
+	GetWorldTimerManager().ClearTimer(UITimerHandle);
+}
+
 void ANBGameStateBase::OnRep_RemainingTurnTime()
 {
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);

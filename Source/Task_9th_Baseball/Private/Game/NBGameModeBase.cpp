@@ -29,6 +29,16 @@ void ANBGameModeBase::OnPostLogin(AController* NewPlayer)
 			NBGameStateBase->MulticastRPCBroadcastLoginMessage(NBPlayerState->PlayerNameString);
 		}
 	}
+	
+	if (AllPlayerControllers.Num() >= 3)
+	{
+		if (bIsPlaying == false)
+		{
+			bIsPlaying = true;
+			SetPlayerToPlay(PlayerIndex);
+		}
+	}
+	
 }
 
 void ANBGameModeBase::BeginPlay()
@@ -36,7 +46,7 @@ void ANBGameModeBase::BeginPlay()
 	Super::BeginPlay();
 	
 	AnswerNumberString = GenerateAnswerNumber();
-	StartPlayerTurnTimer();	
+	
 }
 
 FString ANBGameModeBase::GenerateAnswerNumber()
@@ -149,7 +159,10 @@ void ANBGameModeBase::PrintChatMessageString(ANBPlayerController* InChattingPlay
 	FString GuessNumberString = InChatMessageString.RightChop(Index);
 	FString PlayerInfoString = SetPlayerInfoString(InChattingPlayerController);
 	
-	if (IsGuessNumberString(GuessNumberString) == true)
+	bool bIsMyTurn = InChattingPlayerController->CurrentPlayerState == FGameplayTag::RequestGameplayTag(FName("Player.State.MyTurn"));
+	bool bIsValidNumber = IsGuessNumberString(GuessNumberString);
+	
+	if (bIsMyTurn == true && bIsValidNumber == true)
 	{
 		IncreaseGuessCount(InChattingPlayerController);
 		PlayerInfoString = SetPlayerInfoString(InChattingPlayerController);
@@ -168,6 +181,7 @@ void ANBGameModeBase::PrintChatMessageString(ANBPlayerController* InChattingPlay
 				NBPlayerController->ClientRPCPrintChatMessageString(CombineMessageString);
 			}
 		}
+		ChangePlayerTurn();
 	}
 	else
 	{
@@ -253,7 +267,7 @@ void ANBGameModeBase::StartPlayerTurnTimer()
 	GetWorldTimerManager().SetTimer(
 		PlayerTurnTimerHandle,
 		this,
-		&ANBGameModeBase::ChangePlayerTurn,
+		&ANBGameModeBase::ChangePlayerTurnByTimer,
 		PlayerTurnTime,
 		false
 	);
@@ -261,4 +275,51 @@ void ANBGameModeBase::StartPlayerTurnTimer()
 
 void ANBGameModeBase::ChangePlayerTurn()
 {
+	//타이머 초기화
+	GetWorldTimerManager().ClearTimer(PlayerTurnTimerHandle);
+	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
+	if (IsValid(NBGameStateBase) == true)
+	{
+		NBGameStateBase->ResetUITimer();
+	}
+	
+	PlayerIndex++;
+	if (PlayerIndex >= AllPlayerControllers.Num())
+	{
+		PlayerIndex = 0;
+	}
+	
+	SetPlayerToPlay(PlayerIndex);
 }
+
+void ANBGameModeBase::ChangePlayerTurnByTimer()
+{
+	IncreaseGuessCount(AllPlayerControllers[PlayerIndex]);
+	ChangePlayerTurn();
+}
+
+void ANBGameModeBase::SetPlayerToPlay(int32 InPlayerIndex)
+{
+	ANBPlayerState* NBPlayerState = AllPlayerControllers[InPlayerIndex]->GetPlayerState<ANBPlayerState>();
+	for (const auto& NBPlayerController : AllPlayerControllers)
+	{
+		if (IsValid(NBPlayerController) == true)
+		{
+			if (NBPlayerController == AllPlayerControllers[InPlayerIndex])
+			{
+				NBPlayerController->CurrentPlayerState = (FGameplayTag::RequestGameplayTag(FName("Player.State.MyTurn")));
+			}
+			else
+			{
+				NBPlayerController->CurrentPlayerState = (FGameplayTag::RequestGameplayTag(FName("Player.State.NotMyTurn")));
+			}
+			if (IsValid(NBPlayerController) == true)
+			{
+				FString CombineMessageString = NBPlayerState->PlayerNameString + TEXT("'s Turn");
+				NBPlayerController->ClientRPCPrintResultString(CombineMessageString);
+			}
+		}
+	}
+	StartPlayerTurnTimer();
+}
+

@@ -19,6 +19,8 @@ public class Task_9th_Baseball : ModuleRules
 			"UMG",
 			"Slate",
 			"SlateCore",
+			//GameplayTag
+			"GameplayTags",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

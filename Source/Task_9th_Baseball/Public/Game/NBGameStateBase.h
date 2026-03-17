@@ -27,6 +27,8 @@ public:
 	
 	void StartUITimer();
 	
+	void ResetUITimer();
+	
 	UPROPERTY(ReplicatedUsing= OnRep_RemainingTurnTime)
 	float RemainingTurnTime;
 	

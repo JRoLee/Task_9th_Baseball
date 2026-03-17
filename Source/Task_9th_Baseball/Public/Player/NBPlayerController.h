@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/PlayerController.h"
 #include "NBPlayerController.generated.h"
 
@@ -32,7 +33,7 @@ public:
 	//UI Timer 표시
 	UFUNCTION()
 	void UpdateUITimer(float RemainingTime);
-	
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UNBMainUI> MainUIWidgetClass;
@@ -41,4 +42,18 @@ protected:
 	TObjectPtr<UNBMainUI> MainUIWidgetInstance;
 	
 	FString ChatMassageString;
+	
+#pragma region Set Chatting By Player State
+	
+public:
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
+	UPROPERTY(ReplicatedUsing= OnRep_CurrentPlayerState)
+	FGameplayTag CurrentPlayerState;
+	
+protected:
+	UFUNCTION()
+	void OnRep_CurrentPlayerState();
+
+#pragma endregion
 };

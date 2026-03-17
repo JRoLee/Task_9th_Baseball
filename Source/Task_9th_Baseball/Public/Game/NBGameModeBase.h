@@ -53,6 +53,10 @@ public:
 	
 	void ChangePlayerTurn();
 	
+	void ChangePlayerTurnByTimer();
+	
+	void SetPlayerToPlay(int32 InPlayerIndex);
+	
 	
 protected:
 	
@@ -61,7 +65,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float PlayerTurnTime = 10;
 	
-	int32 PlayerTurnIndex = 0;
+	int32 PlayerIndex = 0;
+	
+	bool bIsPlaying = false;
 
 #pragma endregion
 	

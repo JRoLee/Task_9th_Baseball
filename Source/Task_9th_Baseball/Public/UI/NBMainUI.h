@@ -30,7 +30,7 @@ public:
 	
 	UFUNCTION()
 	void SetTimerText(float RemainingTime);
-	
+
 protected:
 	
 	UFUNCTION()
