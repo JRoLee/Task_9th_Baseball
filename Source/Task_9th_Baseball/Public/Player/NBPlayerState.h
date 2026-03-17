@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/PlayerState.h"
 #include "NBPlayerState.generated.h"
 
@@ -25,8 +26,15 @@ public:
 	UPROPERTY(Replicated)
 	int32 CurrentGuessCount;
 	
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentPlayerState)
+	FGameplayTag CurrentPlayerState;
+	
 	UPROPERTY(Replicated, EditAnywhere)
 	int32 MaxGuessCount;
+	
+protected:
+	UFUNCTION()
+	void OnRep_CurrentPlayerState();
 	
 public:
 	FString GetPlayerInfoString();

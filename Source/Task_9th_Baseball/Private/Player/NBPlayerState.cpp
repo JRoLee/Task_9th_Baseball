@@ -20,6 +20,11 @@ void ANBPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 	DOREPLIFETIME(ThisClass,PlayerNameString);
 	DOREPLIFETIME(ThisClass,CurrentGuessCount);
 	DOREPLIFETIME(ThisClass,MaxGuessCount);
+	DOREPLIFETIME(ThisClass,CurrentPlayerState);
+}
+
+void ANBPlayerState::OnRep_CurrentPlayerState()
+{
 }
 
 FString ANBPlayerState::GetPlayerInfoString()

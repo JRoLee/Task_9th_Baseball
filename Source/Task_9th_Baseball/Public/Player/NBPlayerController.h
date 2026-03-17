@@ -62,18 +62,5 @@ protected:
 	TObjectPtr<UNBMainUI> MainUIWidgetInstance;
 	
 	FString ChatMassageString;
-	
-#pragma region Set Chatting By Player State
-	
-public:
-	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-	
-	UPROPERTY(ReplicatedUsing= OnRep_CurrentPlayerState)
-	FGameplayTag CurrentPlayerState;
-	
-protected:
-	UFUNCTION()
-	void OnRep_CurrentPlayerState();
 
-#pragma endregion
 };

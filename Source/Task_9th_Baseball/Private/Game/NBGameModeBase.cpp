@@ -187,8 +187,8 @@ FString ANBGameModeBase::SetPlayerInfoString(ANBPlayerController* InChattingPlay
 void ANBGameModeBase::PrintChatMessageString(ANBPlayerController* InChattingPlayerController, const FString& InChatMessageString)
 {
 	FString PlayerInfoString = SetPlayerInfoString(InChattingPlayerController);
-	
-	bool bIsMyTurn = InChattingPlayerController->CurrentPlayerState == FGameplayTag::RequestGameplayTag(FName("Player.State.MyTurn"));
+	FGameplayTag ChatPlayerState = InChattingPlayerController->GetPlayerState<ANBPlayerState>()->CurrentPlayerState;
+	bool bIsMyTurn = ChatPlayerState == FGameplayTag::RequestGameplayTag(FName("Player.State.MyTurn"));
 	bool bIsValidNumber = IsGuessNumberString(InChatMessageString);
 	
 	if (bIsMyTurn == true && bIsValidNumber == true)
@@ -328,23 +328,34 @@ void ANBGameModeBase::ChangePlayerTurnByTimer()
 
 void ANBGameModeBase::SetPlayerToPlay(int32 InPlayerIndex)
 {
-	ANBPlayerState* NBPlayerState = AllPlayerControllers[InPlayerIndex]->GetPlayerState<ANBPlayerState>();
+	FString CurrentPlayerNameString;
+	ANBPlayerState* NBCurrentPlayerState = AllPlayerControllers[InPlayerIndex]->GetPlayerState<ANBPlayerState>();
+	if (IsValid(NBCurrentPlayerState) == true)
+	{
+		CurrentPlayerNameString = NBCurrentPlayerState->PlayerNameString;
+	}
+	
 	for (const auto& NBPlayerController : AllPlayerControllers)
 	{
 		if (IsValid(NBPlayerController) == true)
 		{
-			if (NBPlayerController == AllPlayerControllers[InPlayerIndex])
+			ANBPlayerState* NBPlayerState = NBPlayerController->GetPlayerState<ANBPlayerState>();
+			if (IsValid(NBPlayerState) == true)
 			{
-				NBPlayerController->CurrentPlayerState = (FGameplayTag::RequestGameplayTag(FName("Player.State.MyTurn")));
-			}
-			else
-			{
-				NBPlayerController->CurrentPlayerState = (FGameplayTag::RequestGameplayTag(FName("Player.State.NotMyTurn")));
-			}
-			if (IsValid(NBPlayerController) == true)
-			{
-				FString CombineMessageString = NBPlayerState->PlayerNameString + TEXT("'s Turn");
-				NBPlayerController->ClientRPCPrintResultString(CombineMessageString);
+				if (NBPlayerController == AllPlayerControllers[InPlayerIndex])
+				{
+					NBPlayerState->CurrentPlayerState = (FGameplayTag::RequestGameplayTag(FName("Player.State.MyTurn")));
+				}
+				else
+				{
+					NBPlayerState->CurrentPlayerState = (FGameplayTag::RequestGameplayTag(FName("Player.State.NotMyTurn")));
+				}
+			
+				if (IsValid(NBPlayerController) == true)
+				{
+					FString CombineMessageString = CurrentPlayerNameString + TEXT("'s Turn");
+					NBPlayerController->ClientRPCPrintResultString(CombineMessageString);
+				}
 			}
 		}
 	}
