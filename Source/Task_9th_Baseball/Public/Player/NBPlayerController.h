@@ -7,6 +7,8 @@
 #include "GameFramework/PlayerController.h"
 #include "NBPlayerController.generated.h"
 
+class UNBLoginUI;
+
 USTRUCT(BlueprintType)
 struct FResult
 {
@@ -65,5 +67,27 @@ protected:
 	TObjectPtr<UNBMainUI> MainUIWidgetInstance;
 	
 	FString ChatMassageString;
-
+	
+#pragma region Set Player NickName
+	
+public:
+	
+	UFUNCTION(Server, Reliable)
+	void ServerRPCLogInGame(const FString& InPlayerNickName);
+	
+	UFUNCTION(Client, Reliable)
+	void ClientRPCLogInGame();
+	
+	UFUNCTION()
+	void ExitGame();
+	
+protected:
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UNBLoginUI> LoginUIWidgetClass;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UNBLoginUI> LoginUIWidgetInstance;
+	
+#pragma endregion 
 };

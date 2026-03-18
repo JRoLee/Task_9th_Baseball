@@ -81,5 +81,15 @@ protected:
 
 #pragma endregion
 	
+#pragma region LogIn logic
+	
+public:
+	
+	bool IsValidNickName(const FString& InNickName);
+	
+	UFUNCTION()
+	void SetPlayerNickName(ANBPlayerController* LoginPlayerController, const FString& InPlayerNickName);
+
+#pragma endregion
 };
 

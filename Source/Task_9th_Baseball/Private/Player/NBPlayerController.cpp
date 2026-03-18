@@ -2,8 +2,11 @@
 
 
 #include "Player/NBPlayerController.h"
+
+#include "Game/NBGameInstance.h"
 #include "Game/NBGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "UI/NBLoginUI.h"
 #include "UI/NBMainUI.h"
 
 void ANBPlayerController::BeginPlay()
@@ -18,15 +21,14 @@ void ANBPlayerController::BeginPlay()
 	SetShowMouseCursor(true);
 	SetInputMode(FInputModeUIOnly());
 	
-	if (IsValid(MainUIWidgetClass) == true)
+	if (IsValid(LoginUIWidgetClass) == true)
 	{
-		MainUIWidgetInstance = CreateWidget<UNBMainUI>(this, MainUIWidgetClass);
-		if (IsValid(MainUIWidgetClass) == true)
+		LoginUIWidgetInstance = CreateWidget<UNBLoginUI>(this, LoginUIWidgetClass);
+		if (IsValid(LoginUIWidgetInstance) == true)
 		{
-			MainUIWidgetInstance->AddToViewport();
+			LoginUIWidgetInstance->AddToViewport();
 		}
 	}
-	
 }
 
 void ANBPlayerController::SetChatMassageString(const FString& InChatMassageString)
@@ -95,4 +97,39 @@ void ANBPlayerController::UpdateUITimer(float RemainingTime)
 	{
 		MainUIWidgetInstance->SetTimerText(RemainingTime);
 	}
+}
+
+
+void ANBPlayerController::ServerRPCLogInGame_Implementation(const FString& InPlayerNickName)
+{
+	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(this);
+	if (IsValid(GameMode) == true)
+	{
+		ANBGameModeBase* NBGameModeBase = Cast<ANBGameModeBase>(GameMode);
+		if (IsValid(NBGameModeBase) == true)
+		{
+			NBGameModeBase->SetPlayerNickName(this, InPlayerNickName);
+		}
+	}
+}
+
+void ANBPlayerController::ClientRPCLogInGame_Implementation()
+{
+	if (IsValid(LoginUIWidgetInstance) == true)
+	{
+		LoginUIWidgetInstance->RemoveFromParent();
+	}
+	
+	if (IsValid(MainUIWidgetClass) == true)
+	{
+		MainUIWidgetInstance = CreateWidget<UNBMainUI>(this, MainUIWidgetClass);
+		if (IsValid(MainUIWidgetClass) == true)
+		{
+			MainUIWidgetInstance->AddToViewport();
+		}
+	}
+}
+
+void ANBPlayerController::ExitGame()
+{
 }

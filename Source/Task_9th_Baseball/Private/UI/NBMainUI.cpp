@@ -135,7 +135,7 @@ void UNBMainUI::SetResultUI(const FResult& InResult)
 			{
 				PlayLogCard->SetPlayLogCard(InResult);
 				
-				ScrollBox_PlayLog->InsertChildAt(0, PlayLogCard);
+				ScrollBox_PlayLog->AddChild(PlayLogCard);
 			}
 		}
 	}

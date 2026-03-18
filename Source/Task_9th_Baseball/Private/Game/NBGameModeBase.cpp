@@ -4,6 +4,7 @@
 #include "Game/NBGameModeBase.h"
 #include "EngineUtils.h"
 #include "Algo/RandomShuffle.h"
+#include "DSP/AudioDebuggingUtilities.h"
 #include "Game/NBGameStateBase.h"
 #include "Player/NBPlayerController.h"
 #include "Player/NBPlayerState.h"
@@ -16,18 +17,6 @@ void ANBGameModeBase::OnPostLogin(AController* NewPlayer)
 	if (IsValid(NBPlayerController) == true)
 	{
 		AllPlayerControllers.Add(NBPlayerController);
-		
-		ANBPlayerState * NBPlayerState = NBPlayerController->GetPlayerState<ANBPlayerState>();
-		if (IsValid(NBPlayerState) == true)
-		{
-			NBPlayerState->PlayerNameString = TEXT("Player ") + FString::FromInt(AllPlayerControllers.Num());
-		}
-		ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
-		
-		if (IsValid(NBGameStateBase) == true)
-		{
-			NBGameStateBase->MulticastRPCBroadcastLoginMessage(NBPlayerState->PlayerNameString);
-		}
 	}
 }
 
@@ -369,4 +358,53 @@ void ANBGameModeBase::SetPlayerToPlay(int32 InPlayerIndex)
 	}
 	StartPlayerTurnTimer();
 }
+
+
+#pragma endregion
+	
+#pragma region LogIn logic
+
+bool ANBGameModeBase::IsValidNickName(const FString& InNickName)
+{
+	bool bIsValidNickname = false;
+	do
+	{
+		if (InNickName.IsEmpty() == true)
+		{
+			break;
+		}
+		
+		if (InNickName.Contains(TEXT(" ")))
+		{
+			break;
+		}
+				
+		bIsValidNickname = true;
+	}while (false);
+	
+	return bIsValidNickname;
+}
+
+void ANBGameModeBase::SetPlayerNickName(ANBPlayerController* LoginPlayerController, const FString& InPlayerNickName)
+{
+	ANBPlayerState* NBPlayerState = LoginPlayerController->GetPlayerState<ANBPlayerState>();
+	if (IsValid(NBPlayerState) == true)
+	{
+		if (IsValidNickName(InPlayerNickName) == true)
+		{
+			NBPlayerState->PlayerNameString = InPlayerNickName;
+		}
+		else
+		{
+			int32 LoginPlayerIndex = AllPlayerControllers.Find(LoginPlayerController);
+			if (LoginPlayerIndex != INDEX_NONE)
+			{
+				NBPlayerState->PlayerNameString = TEXT("Player ") + FString::FromInt(LoginPlayerIndex);
+			}
+		}
+	}
+
+	LoginPlayerController->ClientRPCLogInGame();
+}
+	
 #pragma endregion
