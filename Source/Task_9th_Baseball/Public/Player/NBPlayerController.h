@@ -58,6 +58,8 @@ public:
 	//UI Timer 표시
 	UFUNCTION()
 	void UpdateUITimer(float RemainingTime);
+	
+	TObjectPtr<UNBMainUI> GetMainUIWidgetInstance() {return MainUIWidgetInstance;}
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -89,5 +91,12 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UNBLoginUI> LoginUIWidgetInstance;
 	
+#pragma endregion 
+	
+#pragma region Set Player Card
+	
+	public:
+	UFUNCTION(Client, Reliable)
+	void ClientRPCRefreshPlayerList(const TArray<FString>& InNickNames, const TArray<int32>& InGuessCounts, const TArray<int32>& InMaxCounts);
 #pragma endregion 
 };

@@ -84,6 +84,7 @@ protected:
 #pragma region LogIn logic
 	
 public:
+	void BroadCastPlayerList();
 	
 	bool IsValidNickName(const FString& InNickName);
 	

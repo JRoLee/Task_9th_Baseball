@@ -2,10 +2,9 @@
 
 
 #include "Player/NBPlayerController.h"
-
-#include "Game/NBGameInstance.h"
 #include "Game/NBGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Player/NBPlayerState.h"
 #include "UI/NBLoginUI.h"
 #include "UI/NBMainUI.h"
 
@@ -132,4 +131,18 @@ void ANBPlayerController::ClientRPCLogInGame_Implementation()
 
 void ANBPlayerController::ExitGame()
 {
+	UKismetSystemLibrary::QuitGame(
+		GetWorld(), 
+		this, 
+		EQuitPreference::Quit, 
+		false);
+}
+
+void ANBPlayerController::ClientRPCRefreshPlayerList_Implementation(const TArray<FString>& InNickNames,
+	const TArray<int32>& InGuessCounts, const TArray<int32>& InMaxCounts)
+{
+	if (IsValid(MainUIWidgetInstance) == true)
+	{
+		MainUIWidgetInstance->RefreshPlayerList(InNickNames, InGuessCounts, InMaxCounts);
+	}
 }

@@ -2,10 +2,8 @@
 
 
 #include "UI/NBLoginUI.h"
-
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
-#include "Player/NBLoginPlayerController.h"
 #include "Player/NBPlayerController.h"
 
 void UNBLoginUI::NativeConstruct()

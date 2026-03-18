@@ -4,7 +4,6 @@
 #include "Game/NBGameModeBase.h"
 #include "EngineUtils.h"
 #include "Algo/RandomShuffle.h"
-#include "DSP/AudioDebuggingUtilities.h"
 #include "Game/NBGameStateBase.h"
 #include "Player/NBPlayerController.h"
 #include "Player/NBPlayerState.h"
@@ -13,11 +12,6 @@ void ANBGameModeBase::OnPostLogin(AController* NewPlayer)
 {
 	Super::OnPostLogin(NewPlayer);
 	
-	ANBPlayerController* NBPlayerController = Cast<ANBPlayerController>(NewPlayer);
-	if (IsValid(NBPlayerController) == true)
-	{
-		AllPlayerControllers.Add(NBPlayerController);
-	}
 }
 
 void ANBGameModeBase::BeginPlay()
@@ -167,6 +161,8 @@ void ANBGameModeBase::IncreaseGuessCount(ANBPlayerController* InChattingPlayerCo
 	{
 		NBPlayerState->CurrentGuessCount++;
 	}
+	
+	BroadCastPlayerList();
 }
 
 FString ANBGameModeBase::SetPlayerInfoString(ANBPlayerController* InChattingPlayerController)
@@ -364,6 +360,34 @@ void ANBGameModeBase::SetPlayerToPlay(int32 InPlayerIndex)
 	
 #pragma region LogIn logic
 
+void ANBGameModeBase::BroadCastPlayerList()
+{
+	TArray<FString> NickNames;
+	TArray<int32> GuessCounts;
+	TArray<int32> MaxCounts;
+    
+	for (const auto& PlayerController : AllPlayerControllers)
+	{
+		if (IsValid(PlayerController) == false) continue;
+        
+		ANBPlayerState* NBPlayerState = PlayerController->GetPlayerState<ANBPlayerState>();
+		if (IsValid(NBPlayerState) == false) continue;
+		if (NBPlayerState->PlayerNameString == TEXT("None")) continue;
+        
+		NickNames.Add(NBPlayerState->PlayerNameString);
+		GuessCounts.Add(NBPlayerState->CurrentGuessCount);
+		MaxCounts.Add(NBPlayerState->MaxGuessCount);
+	}
+    
+	for (const auto& PlayerController : AllPlayerControllers)
+	{
+		if (IsValid(PlayerController) == true)
+		{
+			PlayerController->ClientRPCRefreshPlayerList(NickNames, GuessCounts, MaxCounts);
+		}
+	}
+}
+
 bool ANBGameModeBase::IsValidNickName(const FString& InNickName)
 {
 	bool bIsValidNickname = false;
@@ -387,6 +411,12 @@ bool ANBGameModeBase::IsValidNickName(const FString& InNickName)
 
 void ANBGameModeBase::SetPlayerNickName(ANBPlayerController* LoginPlayerController, const FString& InPlayerNickName)
 {
+	ANBPlayerController* NBPlayerController = Cast<ANBPlayerController>(LoginPlayerController);
+	if (IsValid(NBPlayerController) == true)
+	{
+		AllPlayerControllers.Add(NBPlayerController);
+	}
+	
 	ANBPlayerState* NBPlayerState = LoginPlayerController->GetPlayerState<ANBPlayerState>();
 	if (IsValid(NBPlayerState) == true)
 	{
@@ -405,6 +435,8 @@ void ANBGameModeBase::SetPlayerNickName(ANBPlayerController* LoginPlayerControll
 	}
 
 	LoginPlayerController->ClientRPCLogInGame();
+	
+	BroadCastPlayerList();
 }
 	
 #pragma endregion

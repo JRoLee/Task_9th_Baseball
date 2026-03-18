@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "NBMainUI.generated.h"
 
+struct FResult;
+class UNBPlayerCardWidget;
 class UButton;
 class UNBPlayLogCard;
 class UScrollBox;
@@ -35,7 +37,9 @@ public:
 	
 	UFUNCTION()
 	void SetResultUI(const FResult& InResult);
-
+	
+	UFUNCTION()
+	void RefreshPlayerList( const TArray<FString>& InNickNames, const TArray<int32>& InGuessCounts, const TArray<int32>& InMaxCounts);
 protected:
 	
 	UFUNCTION()
@@ -77,6 +81,12 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> Button_StartGame;
 	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UScrollBox> ScrollBox_PlayerList;
+	
 	UPROPERTY(EditAnywhere, Category="PlayLog | Widget")
 	TSubclassOf<UNBPlayLogCard> PlayLogCardClass;
+	
+	UPROPERTY(EditAnywhere, Category="PlayCard | Widget")
+	TSubclassOf<UNBPlayerCardWidget> PlayerCardWidgetClass;
 };

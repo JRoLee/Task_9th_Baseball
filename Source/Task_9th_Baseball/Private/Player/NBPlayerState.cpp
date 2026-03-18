@@ -2,7 +2,6 @@
 
 
 #include "Player/NBPlayerState.h"
-
 #include "Net/UnrealNetwork.h"
 
 ANBPlayerState::ANBPlayerState()

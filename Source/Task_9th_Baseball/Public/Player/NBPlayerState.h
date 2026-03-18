@@ -32,7 +32,7 @@ public:
 	UPROPERTY(Replicated, EditAnywhere)
 	int32 MaxGuessCount;
 	
-protected:
+protected:	
 	UFUNCTION()
 	void OnRep_CurrentPlayerState();
 	

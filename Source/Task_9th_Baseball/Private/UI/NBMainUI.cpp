@@ -8,6 +8,7 @@
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
 #include "Player/NBPlayerController.h"
+#include "UI/NBPlayerCardWidget.h"
 #include "UI/NBPlayLogCard.h"
 
 void UNBMainUI::NativeConstruct()
@@ -136,6 +137,33 @@ void UNBMainUI::SetResultUI(const FResult& InResult)
 				PlayLogCard->SetPlayLogCard(InResult);
 				
 				ScrollBox_PlayLog->AddChild(PlayLogCard);
+			}
+		}
+	}
+}
+
+void UNBMainUI::RefreshPlayerList(const TArray<FString>& InNickNames, const TArray<int32>& InGuessCounts,
+	const TArray<int32>& InMaxCounts)
+{
+	if (IsValid(ScrollBox_PlayerList) == true)
+	{
+		if (IsValid(PlayerCardWidgetClass) == true)
+		{
+			ScrollBox_PlayerList->ClearChildren();
+    
+			// 순서대로 카드 생성
+			for (int32 i = 0; i < InNickNames.Num(); i++)
+			{
+				UNBPlayerCardWidget* Card = CreateWidget<UNBPlayerCardWidget>(
+					this, PlayerCardWidgetClass);
+				if (IsValid(Card) == false) continue;
+        
+				Card->InitializePlayerCard(
+					InNickNames[i],
+					InGuessCounts[i],
+					InMaxCounts[i]);
+				
+				ScrollBox_PlayerList->AddChild(Card);
 			}
 		}
 	}
