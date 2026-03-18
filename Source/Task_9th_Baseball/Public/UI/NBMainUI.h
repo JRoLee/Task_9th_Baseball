@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "NBMainUI.generated.h"
 
+class UButton;
 class UNBPlayLogCard;
 class UScrollBox;
 class UTextBlock;
@@ -40,6 +41,9 @@ protected:
 	UFUNCTION()
 	void OnChatInputTextCommitted(const FText& Text, ETextCommit::Type CommitMethod);
 	
+	UFUNCTION()
+	void OnStartButtonClicked();
+	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UEditableTextBox> EditableText_ChatInput;
 	
@@ -69,6 +73,9 @@ protected:
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UScrollBox> ScrollBox_PlayLog;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> Button_StartGame;
 	
 	UPROPERTY(EditAnywhere, Category="PlayLog | Widget")
 	TSubclassOf<UNBPlayLogCard> PlayLogCardClass;

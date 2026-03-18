@@ -3,6 +3,7 @@
 
 #include "UI/NBMainUI.h"
 
+#include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
@@ -18,6 +19,10 @@ void UNBMainUI::NativeConstruct()
 		EditableText_ChatInput->OnTextCommitted.AddDynamic(this, &UNBMainUI::OnChatInputTextCommitted);
 	}
 	
+	if (Button_StartGame->OnClicked.IsAlreadyBound(this, &UNBMainUI::OnStartButtonClicked) == false)
+	{
+		Button_StartGame->OnClicked.AddDynamic(this, &UNBMainUI::OnStartButtonClicked);
+	}	
 }
 
 void UNBMainUI::NativeDestruct()
@@ -27,6 +32,11 @@ void UNBMainUI::NativeDestruct()
 	if (EditableText_ChatInput->OnTextCommitted.IsAlreadyBound(this, &UNBMainUI::OnChatInputTextCommitted) == true)
 	{
 		EditableText_ChatInput->OnTextCommitted.RemoveDynamic(this, &UNBMainUI::OnChatInputTextCommitted);
+	}
+	
+	if (Button_StartGame->OnClicked.IsAlreadyBound(this, &UNBMainUI::OnStartButtonClicked) == true)
+	{
+		Button_StartGame->OnClicked.RemoveDynamic(this, &UNBMainUI::OnStartButtonClicked);
 	}
 }
 
@@ -43,6 +53,18 @@ void UNBMainUI::OnChatInputTextCommitted(const FText& Text, ETextCommit::Type Co
 								
 				EditableText_ChatInput->SetText(FText());
 			}
+		}
+	}
+}
+
+void UNBMainUI::OnStartButtonClicked()
+{
+	TObjectPtr<APlayerController> OwningPlayerController = GetOwningPlayer();
+	if (IsValid(OwningPlayerController) == true)
+	{
+		TObjectPtr<ANBPlayerController> OwningNBPlayerController = Cast<ANBPlayerController>(OwningPlayerController);
+		{
+			OwningNBPlayerController->ServerRPCRequestStartGame();
 		}
 	}
 }

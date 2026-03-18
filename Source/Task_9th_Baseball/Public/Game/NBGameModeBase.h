@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/GameModeBase.h"
 #include "NBGameModeBase.generated.h"
 
@@ -24,6 +25,9 @@ public:
 #pragma region GamePlayLogic
 	
 public:
+	void StartGamePlay();
+	
+	void EndGamePlay();
 		
 	void PrintChatMessageString(ANBPlayerController* InChattingPlayerController, const FString& InChatMessageString);
 	
@@ -45,6 +49,7 @@ public:
 	
 protected:
 	
+	FGameplayTag CurrentGameState = FGameplayTag::RequestGameplayTag(FName("Game.State.Wait"));
 	
 	FString AnswerNumberString;
 	

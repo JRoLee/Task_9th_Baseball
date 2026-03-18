@@ -15,7 +15,7 @@ void ANBPlayerController::BeginPlay()
 		return;
 	}
 	
-	
+	SetShowMouseCursor(true);
 	SetInputMode(FInputModeUIOnly());
 	
 	if (IsValid(MainUIWidgetClass) == true)
@@ -73,6 +73,19 @@ void ANBPlayerController::ClientRPCShowResult_Implementation(const FResult& InRe
 	if (IsValid(MainUIWidgetInstance) == true)
 	{
 		MainUIWidgetInstance->SetResultUI(InResult);
+	}
+}
+
+void ANBPlayerController::ServerRPCRequestStartGame_Implementation()
+{
+	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(this);
+	if (IsValid(GameMode) == true)
+	{
+		ANBGameModeBase* NBGameModeBase = Cast<ANBGameModeBase>(GameMode);
+		if (IsValid(NBGameModeBase) == true)
+		{
+			NBGameModeBase->StartGamePlay();
+		}
 	}
 }
 

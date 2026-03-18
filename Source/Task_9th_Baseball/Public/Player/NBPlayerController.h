@@ -50,6 +50,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPCPrintChatMessageString(const FString& InChatMessageString);
 	
+	UFUNCTION(Server, Reliable)
+	void ServerRPCRequestStartGame();
+	
 	//UI Timer 표시
 	UFUNCTION()
 	void UpdateUITimer(float RemainingTime);

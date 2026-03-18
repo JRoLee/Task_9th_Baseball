@@ -29,24 +29,33 @@ void ANBGameModeBase::OnPostLogin(AController* NewPlayer)
 			NBGameStateBase->MulticastRPCBroadcastLoginMessage(NBPlayerState->PlayerNameString);
 		}
 	}
-	
-	if (AllPlayerControllers.Num() >= 1)
-	{
-		if (bIsPlaying == false)
-		{
-			bIsPlaying = true;
-			SetPlayerToPlay(PlayerIndex);
-		}
-	}
-	
 }
 
 void ANBGameModeBase::BeginPlay()
 {
-	Super::BeginPlay();
+	Super::BeginPlay();	
+}
+
+void ANBGameModeBase::StartGamePlay()
+{
+	if (CurrentGameState == FGameplayTag::RequestGameplayTag(FName("Game.State.InGame"))) return;
 	
-	AnswerNumberString = GenerateAnswerNumber();
+	CurrentGameState = FGameplayTag::RequestGameplayTag(FName("Game.State.InGame"));
+	ResetGame();
+	SetPlayerToPlay(PlayerIndex);
+}
+
+void ANBGameModeBase::EndGamePlay()
+{
+	//타이머 초기화
+	GetWorldTimerManager().ClearTimer(PlayerTurnTimerHandle);
+	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
+	if (IsValid(NBGameStateBase) == true)
+	{
+		NBGameStateBase->ResetUITimer();
+	}
 	
+	CurrentGameState = FGameplayTag::RequestGameplayTag(FName("Game.State.Wait"));
 }
 
 #pragma region GamePlayLogic
@@ -188,10 +197,12 @@ void ANBGameModeBase::PrintChatMessageString(ANBPlayerController* InChattingPlay
 {
 	FString PlayerInfoString = SetPlayerInfoString(InChattingPlayerController);
 	FGameplayTag ChatPlayerState = InChattingPlayerController->GetPlayerState<ANBPlayerState>()->CurrentPlayerState;
+	
 	bool bIsMyTurn = ChatPlayerState == FGameplayTag::RequestGameplayTag(FName("Player.State.MyTurn"));
 	bool bIsValidNumber = IsGuessNumberString(InChatMessageString);
+	bool bIsInGame = CurrentGameState == FGameplayTag::RequestGameplayTag(FName("Game.State.InGame"));
 	
-	if (bIsMyTurn == true && bIsValidNumber == true)
+	if (bIsMyTurn == true && bIsValidNumber == true && bIsInGame == true)
 	{
 		IncreaseGuessCount(InChattingPlayerController);
 		FResult JudgeResult = MakeJudgeResult(AnswerNumberString, InChatMessageString);
@@ -206,7 +217,6 @@ void ANBGameModeBase::PrintChatMessageString(ANBPlayerController* InChattingPlay
 			}
 		}
 		JudgeGame(InChattingPlayerController, StrikeCount);
-		ChangePlayerTurn();
 	}
 	else
 	{
@@ -248,7 +258,7 @@ void ANBGameModeBase::JudgeGame(ANBPlayerController* InChattingPlayerController,
 				FString CombineMessageString = NBPlayerState->PlayerNameString + TEXT(" has won the game!");
 				NBPlayerController->ClientRPCPrintResultString(CombineMessageString);
 				
-				ResetGame();
+				EndGamePlay();
 			}
 		}
 	}
@@ -263,6 +273,7 @@ void ANBGameModeBase::JudgeGame(ANBPlayerController* InChattingPlayerController,
 				if (NBPlayerState->CurrentGuessCount < NBPlayerState->MaxGuessCount)
 				{
 					bIsDraw = false;
+					ChangePlayerTurn();
 					break;
 				}
 			}
@@ -274,7 +285,7 @@ void ANBGameModeBase::JudgeGame(ANBPlayerController* InChattingPlayerController,
 			{
 				NBPlayerController->ClientRPCPrintResultString(TEXT("Draw..."));
 				
-				ResetGame();
+				EndGamePlay();
 			}
 		}
 	}
@@ -345,14 +356,11 @@ void ANBGameModeBase::SetPlayerToPlay(int32 InPlayerIndex)
 				if (NBPlayerController == AllPlayerControllers[InPlayerIndex])
 				{
 					NBPlayerState->CurrentPlayerState = (FGameplayTag::RequestGameplayTag(FName("Player.State.MyTurn")));
+					NBPlayerController->ClientRPCPrintResultString(TEXT("My Turn"));
 				}
 				else
 				{
 					NBPlayerState->CurrentPlayerState = (FGameplayTag::RequestGameplayTag(FName("Player.State.NotMyTurn")));
-				}
-			
-				if (IsValid(NBPlayerController) == true)
-				{
 					FString CombineMessageString = CurrentPlayerNameString + TEXT("'s Turn");
 					NBPlayerController->ClientRPCPrintResultString(CombineMessageString);
 				}
