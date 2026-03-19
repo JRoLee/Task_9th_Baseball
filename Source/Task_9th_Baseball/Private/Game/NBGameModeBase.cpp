@@ -337,6 +337,13 @@ void ANBGameModeBase::SetPlayerToPlay(int32 InPlayerIndex)
 {
 	if (IsValid(AllPlayerControllers[InPlayerIndex]) == false)
 	{
+		AllPlayerControllers.RemoveAt(InPlayerIndex);
+		
+		if (PlayerIndex >= AllPlayerControllers.Num())
+		{
+			PlayerIndex = 0;
+		}
+		
 		ChangePlayerTurn();
 		return;
 	}
