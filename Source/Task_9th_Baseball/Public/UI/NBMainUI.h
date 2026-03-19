@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "NBMainUI.generated.h"
 
+class UHorizontalBox;
+class UImage;
 struct FResult;
 class UNBPlayerCardWidget;
 class UButton;
@@ -40,6 +42,10 @@ public:
 	
 	UFUNCTION()
 	void RefreshPlayerList( const TArray<FString>& InNickNames, const TArray<int32>& InGuessCounts, const TArray<int32>& InMaxCounts);
+	
+	UFUNCTION()
+	void ResetAllUIs();
+	
 protected:
 	
 	UFUNCTION()
@@ -47,6 +53,18 @@ protected:
 	
 	UFUNCTION()
 	void OnStartButtonClicked();
+	
+	UFUNCTION()
+	void SetStrikeResult();
+	
+	UFUNCTION()
+	void SetBallResult();
+	
+	UFUNCTION()
+	void SetOutResult();
+	
+	UFUNCTION()
+	void ResetResult();
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UEditableTextBox> EditableText_ChatInput;
@@ -89,4 +107,36 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category="PlayCard | Widget")
 	TSubclassOf<UNBPlayerCardWidget> PlayerCardWidgetClass;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI Resources")
+	TObjectPtr<UTexture2D> BlankTexture;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI Resources")
+	TObjectPtr<UTexture2D> StrikeTexture;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI Resources")
+	TObjectPtr<UTexture2D> BallTexture;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI Resources")
+	TObjectPtr<UTexture2D> OutTexture;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UHorizontalBox> HorizontalBox_StrikeImage;
+	UPROPERTY()
+	TArray<UImage*> StrikeImages;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UHorizontalBox> HorizontalBox_BallImage;
+	UPROPERTY()
+	TArray<UImage*> BallImages;	
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> Image_OutImage;
+	
+private:
+	int32 TempStrikeCount;
+	int32 TempBallCount;
+	bool bIsOutTemp;
+	
+	FTimerHandle StrikeTimerHandle;
+	FTimerHandle BallTimerHandle;
+	FTimerHandle OutTimerHandle;
+	FTimerHandle ResetTimerHandle;
 };

@@ -14,35 +14,48 @@ void UNBPlayLogCard::SetPlayLogCard(FResult const& InResult)
 		TextBlock_PlayLog -> SetText(FText::FromString(InResult.InputAnswerString));
 	}
 	
+	if (IsValid(Overlay_HomeRun) == true)
+	{
+		Overlay_HomeRun->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	if (IsValid(Overlay_Strike) == true)
+	{
+		Overlay_Strike->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	if (IsValid(Overlay_Ball) == true)
+	{
+		Overlay_Ball->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	if (IsValid(Overlay_Out) == true)
+	{
+		Overlay_Out->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	
+	
 	if (InResult.bIsOut == true)
 	{
-		if (IsValid(Overlay_Strike) == true)
-		{
-			Overlay_Strike->SetVisibility(ESlateVisibility::Collapsed);
-		}
-		if (IsValid(Overlay_Ball) == true)
-		{
-			Overlay_Ball->SetVisibility(ESlateVisibility::Collapsed);
-		}
 		if (IsValid(Overlay_Out) == true)
 		{
 			Overlay_Out->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
+	else if (InResult.StrikeCount == 3)
+	{
+		if (IsValid(Overlay_HomeRun) == true)
+		{
+			Overlay_HomeRun->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
 	else
 	{
-		if (IsValid(Overlay_Out) == true)
-		{
-			Overlay_Out->SetVisibility(ESlateVisibility::Collapsed);
-		}
-		
 		if (IsValid(Overlay_Strike) == true)
 		{
 			if (IsValid(TextBlock_Strike) == true)
 			{
-				TextBlock_Strike->SetText(FText::FromString(FString::FromInt(InResult.StrikeCount)+TEXT(" S")));
+				TextBlock_Strike->SetText(FText::FromString(FString::FromInt(InResult.StrikeCount) + TEXT(" S")));
+
+				Overlay_Strike->SetVisibility(ESlateVisibility::Visible);
 			}
-			Overlay_Strike->SetVisibility(ESlateVisibility::Visible);
 		}
 		
 		if (IsValid(Overlay_Ball) == true)
@@ -50,8 +63,9 @@ void UNBPlayLogCard::SetPlayLogCard(FResult const& InResult)
 			if (IsValid(TextBlock_Ball) == true)
 			{
 				TextBlock_Ball->SetText(FText::FromString(FString::FromInt(InResult.BallCount)+TEXT(" B")));
+				
+				Overlay_Ball->SetVisibility(ESlateVisibility::Visible);
 			}
-			Overlay_Ball->SetVisibility(ESlateVisibility::Visible);
 		}		
 	}
 }

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayTagContainer.h"
 #include "GameFramework/PlayerController.h"
 #include "NBPlayerController.generated.h"
 
@@ -48,6 +47,9 @@ public:
 	
 	UFUNCTION(Client, Reliable)
 	void ClientRPCShowResult(const FResult& InResult);
+	
+	UFUNCTION(Client, Reliable)
+	void ClientRPCResetUI();
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPCPrintChatMessageString(const FString& InChatMessageString);

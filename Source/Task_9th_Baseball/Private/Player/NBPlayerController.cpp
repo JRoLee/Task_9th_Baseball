@@ -90,6 +90,14 @@ void ANBPlayerController::ServerRPCRequestStartGame_Implementation()
 	}
 }
 
+void ANBPlayerController::ClientRPCResetUI_Implementation()
+{
+	if (IsValid(MainUIWidgetInstance) == true)
+	{
+		MainUIWidgetInstance->ResetAllUIs();
+	}
+}
+
 void ANBPlayerController::UpdateUITimer(float RemainingTime)
 {
 	if (IsValid(MainUIWidgetInstance) == true)

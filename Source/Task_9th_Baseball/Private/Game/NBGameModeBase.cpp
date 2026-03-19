@@ -24,6 +24,13 @@ void ANBGameModeBase::StartGamePlay()
 	if (CurrentGameState == FGameplayTag::RequestGameplayTag(FName("Game.State.InGame"))) return;
 	
 	CurrentGameState = FGameplayTag::RequestGameplayTag(FName("Game.State.InGame"));
+	for (const auto PlayerController : AllPlayerControllers)
+	{
+		if (IsValid(PlayerController) == true)
+		{
+			PlayerController->ClientRPCResetUI();
+		}
+	}
 	ResetGame();
 	SetPlayerToPlay(PlayerIndex);
 }
@@ -181,13 +188,10 @@ FString ANBGameModeBase::SetPlayerInfoString(ANBPlayerController* InChattingPlay
 void ANBGameModeBase::PrintChatMessageString(ANBPlayerController* InChattingPlayerController, const FString& InChatMessageString)
 {
 	FString PlayerInfoString = SetPlayerInfoString(InChattingPlayerController);
-	FGameplayTag ChatPlayerState = InChattingPlayerController->GetPlayerState<ANBPlayerState>()->CurrentPlayerState;
 	
-	bool bIsMyTurn = ChatPlayerState == FGameplayTag::RequestGameplayTag(FName("Player.State.MyTurn"));
-	bool bIsValidNumber = IsGuessNumberString(InChatMessageString);
-	bool bIsInGame = CurrentGameState == FGameplayTag::RequestGameplayTag(FName("Game.State.InGame"));
+	bool bShouldJudgeInChat = bShouldJudgeChat(InChattingPlayerController,InChatMessageString);
 	
-	if (bIsMyTurn == true && bIsValidNumber == true && bIsInGame == true)
+	if (bShouldJudgeInChat == true)
 	{
 		IncreaseGuessCount(InChattingPlayerController);
 		FResult JudgeResult = MakeJudgeResult(AnswerNumberString, InChatMessageString);
@@ -229,6 +233,7 @@ void ANBGameModeBase::ResetGame()
 			NBPlayerState->CurrentGuessCount = 0;
 		}
 	}
+	BroadCastPlayerList();
 }
 
 void ANBGameModeBase::JudgeGame(ANBPlayerController* InChattingPlayerController, int32 InStrikeCount)
@@ -274,6 +279,46 @@ void ANBGameModeBase::JudgeGame(ANBPlayerController* InChattingPlayerController,
 			}
 		}
 	}
+}
+
+bool ANBGameModeBase::bShouldJudgeChat(ANBPlayerController* InChattingPlayerController, const FString& InChatMessageString)
+{
+	bool bShouldJudgeChat = false;
+	ANBPlayerState* ChatPlayerState = InChattingPlayerController->GetPlayerState<ANBPlayerState>();
+	FGameplayTag ChatPlayerCurrentState = ChatPlayerState->CurrentPlayerState;
+	
+	bool bIsMyTurn = ChatPlayerCurrentState == FGameplayTag::RequestGameplayTag(FName("Player.State.MyTurn"));
+	bool bIsValidNumber = IsGuessNumberString(InChatMessageString);
+	bool bIsInGame = CurrentGameState == FGameplayTag::RequestGameplayTag(FName("Game.State.InGame"));
+	bool bHasChance = ChatPlayerState->CurrentGuessCount < ChatPlayerState->MaxGuessCount;
+
+	do
+	{
+		if ( ChatPlayerCurrentState != FGameplayTag::RequestGameplayTag(FName("Player.State.MyTurn")))
+		{
+			break;
+		}
+		
+		if (IsGuessNumberString(InChatMessageString) == false)
+		{
+			break;
+		}
+		
+		if (CurrentGameState != FGameplayTag::RequestGameplayTag(FName("Game.State.InGame")))
+		{
+			break;
+		}
+		
+		if ( ChatPlayerState->CurrentGuessCount >= ChatPlayerState->MaxGuessCount)
+		{
+			break;
+		}
+		
+		bShouldJudgeChat = true;
+	}
+	while (false);
+
+	return bShouldJudgeChat;
 }
 #pragma endregion 
 

@@ -49,6 +49,8 @@ public:
 	
 protected:
 	
+	bool bShouldJudgeChat(ANBPlayerController* InChattingPlayerController, const FString& InChatMessageString);
+	
 	FGameplayTag CurrentGameState = FGameplayTag::RequestGameplayTag(FName("Game.State.Wait"));
 	
 	FString AnswerNumberString;

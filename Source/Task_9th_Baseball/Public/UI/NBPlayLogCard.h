@@ -37,5 +37,8 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UOverlay> Overlay_Out;
 	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UOverlay> Overlay_HomeRun;
+	
 	
 };
