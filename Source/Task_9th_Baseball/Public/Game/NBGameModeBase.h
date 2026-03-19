@@ -35,8 +35,6 @@ public:
 	
 	bool IsGuessNumberString(const FString& InNumberString);
 	
-	FString JudgeResult(const FString& InAnswerNumberString, const FString& InGuessNumberString);
-	
 	FResult MakeJudgeResult(const FString& InAnswerNumberString, const FString& InGuessNumberString);
 	
 	void IncreaseGuessCount(ANBPlayerController* InChattingPlayerController);
@@ -79,8 +77,6 @@ protected:
 	
 	int32 PlayerIndex = 0;
 	
-	bool bIsPlaying = false;
-
 #pragma endregion
 	
 #pragma region LogIn logic

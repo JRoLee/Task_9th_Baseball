@@ -17,9 +17,7 @@ class TASK_9TH_BASEBALL_API UNBPlayerCardWidget : public UUserWidget
 public:
 	
 	void InitializePlayerCard(const FString& NickName, int32 CurrentGuessCount, int32 MaxGuessCount);
-	
-	void UpdatePlayerCardInfo(int32 CurrentGuessCount, int32 MaxGuessCount);
-	
+
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> TextBlock_NickName;

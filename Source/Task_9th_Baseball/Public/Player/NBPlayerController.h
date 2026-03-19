@@ -70,8 +70,6 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UNBMainUI> MainUIWidgetInstance;
 	
-	FString ChatMassageString;
-	
 #pragma region Set Player NickName
 	
 public:

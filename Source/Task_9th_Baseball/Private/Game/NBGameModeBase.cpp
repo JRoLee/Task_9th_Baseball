@@ -102,33 +102,6 @@ bool ANBGameModeBase::IsGuessNumberString(const FString& InNumberString)
 	return bCanPlay;
 }
 
-FString ANBGameModeBase::JudgeResult(const FString& InAnswerNumberString, const FString& InGuessNumberString)
-{
-	int32 StrikeCount = 0, BallCount = 0;
-	
-	for (int32 i = 0; i < 3; i++)
-	{
-		if (InAnswerNumberString[i] == InGuessNumberString[i])
-		{
-			StrikeCount++;
-		}
-		else
-		{
-			FString PlayerGuessChar = FString::Printf(TEXT("%c"), InGuessNumberString[i]);
-			if (InAnswerNumberString.Contains(PlayerGuessChar) == true)
-			{
-				BallCount++;
-			}
-		}
-	}
-	if (StrikeCount == 0 && BallCount == 0)
-	{
-		return TEXT("OUT");
-	}
-	
-	return FString::Printf(TEXT("%dS %dB"),StrikeCount,BallCount);
-}
-
 FResult ANBGameModeBase::MakeJudgeResult(const FString& InAnswerNumberString, const FString& InGuessNumberString)
 {
 	FResult NewResult;
@@ -186,9 +159,7 @@ FString ANBGameModeBase::SetPlayerInfoString(ANBPlayerController* InChattingPlay
 }
 
 void ANBGameModeBase::PrintChatMessageString(ANBPlayerController* InChattingPlayerController, const FString& InChatMessageString)
-{
-	FString PlayerInfoString = SetPlayerInfoString(InChattingPlayerController);
-	
+{	
 	bool bShouldJudgeInChat = bShouldJudgeChat(InChattingPlayerController,InChatMessageString);
 	
 	if (bShouldJudgeInChat == true)
@@ -214,7 +185,7 @@ void ANBGameModeBase::PrintChatMessageString(ANBPlayerController* InChattingPlay
 			ANBPlayerController* NBPlayerController = *It;
 			if (IsValid(NBPlayerController) == true)
 			{
-				FString CombineMessageString = PlayerInfoString + TEXT(": ") + InChatMessageString;
+				FString CombineMessageString = SetPlayerInfoString(InChattingPlayerController) + TEXT(": ") + InChatMessageString;
 				NBPlayerController->ClientRPCPrintChatMessageString(CombineMessageString);
 			}
 		}

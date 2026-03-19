@@ -17,12 +17,3 @@ void UNBPlayerCardWidget::InitializePlayerCard(const FString& NickName, int32 Cu
 		TextBlock_GuessCount->SetText(FText::FromString(CombinedString));
 	}
 }
-
-void UNBPlayerCardWidget::UpdatePlayerCardInfo(int32 CurrentGuessCount, int32 MaxGuessCount)
-{
-	if (IsValid(TextBlock_GuessCount) == true)
-	{
-		FString CombinedString = TEXT("(") + FString::FromInt(CurrentGuessCount) + TEXT("/") + FString::FromInt(MaxGuessCount) + TEXT(")");
-		TextBlock_GuessCount->SetText(FText::FromString(CombinedString));
-	}
-}

@@ -32,8 +32,6 @@ void ANBPlayerController::BeginPlay()
 
 void ANBPlayerController::SetChatMassageString(const FString& InChatMassageString)
 {
-	ChatMassageString = InChatMassageString;
-	
 	if (IsLocalController() == true)
 	{
 		ServerRPCPrintChatMessageString(InChatMassageString);

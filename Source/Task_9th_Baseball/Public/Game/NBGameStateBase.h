@@ -14,10 +14,6 @@ class TASK_9TH_BASEBALL_API ANBGameStateBase : public AGameStateBase
 {
 	GENERATED_BODY()
 	
-public:
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastRPCBroadcastLoginMessage(const FString& InNameString = FString(TEXT("DefaultName")));
-	
 #pragma region UI Timer
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

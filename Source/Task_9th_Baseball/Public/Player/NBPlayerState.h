@@ -26,16 +26,11 @@ public:
 	UPROPERTY(Replicated)
 	int32 CurrentGuessCount;
 	
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentPlayerState)
+	UPROPERTY(Replicated)
 	FGameplayTag CurrentPlayerState;
 	
 	UPROPERTY(Replicated, EditAnywhere)
 	int32 MaxGuessCount;
 	
-protected:	
-	UFUNCTION()
-	void OnRep_CurrentPlayerState();
-	
-public:
 	FString GetPlayerInfoString();
 };
