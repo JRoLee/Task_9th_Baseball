@@ -287,11 +287,6 @@ bool ANBGameModeBase::bShouldJudgeChat(ANBPlayerController* InChattingPlayerCont
 	ANBPlayerState* ChatPlayerState = InChattingPlayerController->GetPlayerState<ANBPlayerState>();
 	FGameplayTag ChatPlayerCurrentState = ChatPlayerState->CurrentPlayerState;
 	
-	bool bIsMyTurn = ChatPlayerCurrentState == FGameplayTag::RequestGameplayTag(FName("Player.State.MyTurn"));
-	bool bIsValidNumber = IsGuessNumberString(InChatMessageString);
-	bool bIsInGame = CurrentGameState == FGameplayTag::RequestGameplayTag(FName("Game.State.InGame"));
-	bool bHasChance = ChatPlayerState->CurrentGuessCount < ChatPlayerState->MaxGuessCount;
-
 	do
 	{
 		if ( ChatPlayerCurrentState != FGameplayTag::RequestGameplayTag(FName("Player.State.MyTurn")))
@@ -369,10 +364,21 @@ void ANBGameModeBase::ChangePlayerTurnByTimer()
 
 void ANBGameModeBase::SetPlayerToPlay(int32 InPlayerIndex)
 {
-	FString CurrentPlayerNameString;
+	if (IsValid(AllPlayerControllers[InPlayerIndex]) == false)
+	{
+		ChangePlayerTurn();
+		return;
+	}
+	
 	ANBPlayerState* NBCurrentPlayerState = AllPlayerControllers[InPlayerIndex]->GetPlayerState<ANBPlayerState>();
+	FString CurrentPlayerNameString;
 	if (IsValid(NBCurrentPlayerState) == true)
 	{
+		if (NBCurrentPlayerState->CurrentGuessCount >= NBCurrentPlayerState->MaxGuessCount)
+		{
+			ChangePlayerTurn();
+			return;
+		}
 		CurrentPlayerNameString = NBCurrentPlayerState->PlayerNameString;
 	}
 	
